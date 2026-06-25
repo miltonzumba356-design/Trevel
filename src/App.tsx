@@ -51,12 +51,19 @@ const navItems = [
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <header className={`site-header nav-hover-only ${open ? "is-scrolled" : "is-top"}`}>
-      <button className="icon-button menu-toggle" onClick={() => setOpen(!open)} aria-label="Abrir menu">
-        {open ? <X size={22} /> : <Menu size={22} />}
-      </button>
+    <header className={`site-header nav-hover-only ${open || scrolled ? "is-scrolled" : "is-top"}`}>
+      <Link to="/" className="brand">
+        <img src="/navbar.png" alt="Cosmos Travel Angola" className="brand-icon" />
+      </Link>
       <nav className={open ? "nav-links open" : "nav-links"}>
         {navItems.map((item) => (
           <NavLink key={item.path} to={item.path} onClick={() => setOpen(false)}>
@@ -64,6 +71,9 @@ function Header() {
           </NavLink>
         ))}
       </nav>
+      <button className="icon-button menu-toggle" onClick={() => setOpen(!open)} aria-label="Abrir menu">
+        {open ? <X size={22} /> : <Menu size={22} />}
+      </button>
     </header>
   );
 }
@@ -72,17 +82,16 @@ function Footer() {
   return (
     <footer className="footer">
       <div>
-        <div className="brand footer-brand">
-          <span className="brand-mark">AN</span>
-          <span>Angola Nexus</span>
+        <div className="footer-brand">
+          <img src="/logo.png" alt="Cosmos Travel Angola" className="brand-logo footer-logo" />
         </div>
-        <p>Reservas, vouchers e experiências turísticas premium em Angola com protótipo GDS integrado.</p>
+        <p>Reservas, vouchers e experiências turísticas premium em Angola.</p>
       </div>
       <div>
         <h3>Contactos</h3>
         <p>+244 923 000 900</p>
-        <p>reservas@angolanexus.ao</p>
-        <p>Talatona, Luanda</p>
+        <p>reservas@cosmos-viagens.co.ao</p>
+        <p>Luanda, Angola</p>
       </div>
       <div>
         <h3>Links úteis</h3>
@@ -99,7 +108,7 @@ function Footer() {
           <a href="#" aria-label="Facebook">
             <Facebook size={20} />
           </a>
-          <a href="#" aria-label="Website">
+          <a href="https://cosmos-viagens.co.ao" aria-label="Website" target="_blank" rel="noopener noreferrer">
             <Globe2 size={20} />
           </a>
         </div>
