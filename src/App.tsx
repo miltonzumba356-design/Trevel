@@ -29,7 +29,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Link, NavLink, Route, Routes } from "react-router-dom";
+import { Link, NavLink, Route, Routes, useLocation } from "react-router-dom";
 import {
   Experience,
   flights,
@@ -49,31 +49,44 @@ const navItems = [
   { path: "/parceiros-aereos", label: "Parceiros Aéreos" },
 ];
 
+const darkHeroRoutes = ["/", "/lazer-exterior", "/lazer-interior"];
+
 function Header() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [inHero, setInHero] = useState(true);
+  const { pathname } = useLocation();
+  const isDark = !open && darkHeroRoutes.includes(pathname) && inHero;
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    const onScroll = () => setInHero(window.scrollY < window.innerHeight * 0.88);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (
-    <header className={`site-header nav-hover-only ${open || scrolled ? "is-scrolled" : "is-top"}`}>
+    <header className={`site-header${isDark ? " is-dark-hero" : ""}`}>
       <Link to="/" className="brand">
-        <img src="/navbar.png" alt="Cosmos Travel Angola" className="brand-icon" />
+        <img src="/navbar.png" alt="" className="brand-icon" />
+        <div className="brand-text">
+          <span className="brand-cosmos">cosmos</span>
+          <small className="brand-sub">Travel Angola</small>
+        </div>
       </Link>
-      <nav className={open ? "nav-links open" : "nav-links"}>
+      <nav className={`nav-links${open ? " open" : ""}`}>
         {navItems.map((item) => (
-          <NavLink key={item.path} to={item.path} onClick={() => setOpen(false)}>
+          <NavLink key={item.path} to={item.path} end={item.path === "/"} onClick={() => setOpen(false)}>
             {item.label}
           </NavLink>
         ))}
       </nav>
-      <button className="icon-button menu-toggle" onClick={() => setOpen(!open)} aria-label="Abrir menu">
-        {open ? <X size={22} /> : <Menu size={22} />}
-      </button>
+      <div className="header-actions">
+        <Link to="/compras-reservas" className="header-cta">
+          Reservar <ArrowRight size={15} />
+        </Link>
+        <button className="icon-button menu-toggle" onClick={() => setOpen(!open)} aria-label="Abrir menu">
+          {open ? <X size={20} /> : <Menu size={20} />}
+        </button>
+      </div>
     </header>
   );
 }
